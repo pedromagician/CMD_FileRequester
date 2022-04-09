@@ -5,17 +5,45 @@
 class UTL_Cmd
 {
 public:
-	static int ParseCommandLinbe(int argc, _TCHAR* argv[], int& iCorrectParameters, bool& bHelp, wstring& title, bool &bOpen, bool& bSave, wstring& filename, wstring& okLabel, wstring& path, bool& bDrawersOnly, wstring& filter);
+	enum ARGUMENT_TYPE { _STRING, _TRUE, _BOOL, _INT, _COLOR, _ENUM };
+	struct ARGUMENT {
+		vector<wstring>		text;
+		ARGUMENT_TYPE		type;
+		void* pVar;
+		map<wstring, UINT>* pTable;
+		wstring				help;
+	};
 
-	static bool IsHelp(wstring comm);
-	static bool IsTitle(wstring comm);
-	static bool IsOpen(wstring comm);
-	static bool IsSave(wstring comm);
-	static bool IsFileName(wstring comm);
-	static bool IsOkLabel(wstring comm);
-	static bool IsPath(wstring comm);
-	static bool IsDrawersOnly(wstring comm);
-	static bool IsFilter(wstring comm);
+	enum Type {
+		Ok = MB_OK,
+		OkCancel = MB_OKCANCEL,
+		YesNo = MB_YESNO,
+		YesNoCancel = MB_YESNOCANCEL,
+	};
 
-	static void Help();
+	enum Icon {
+		NoIcon = 0x00000000L,
+		Information = MB_ICONINFORMATION,
+		Question = MB_ICONQUESTION,
+		Warning = MB_ICONWARNING,
+		Error = MB_ICONERROR,
+	};
+
+	enum DefaultButton {
+		Def1 = MB_DEFBUTTON1,
+		Def2 = MB_DEFBUTTON2,
+		Def3 = MB_DEFBUTTON3,
+	};
+
+private:
+	vector<ARGUMENT> mArguments;
+
+public:
+	UTL_Cmd();
+	~UTL_Cmd();
+	void Add(ARGUMENT_TYPE _type, int _num, ...);
+
+	int ParseCommandLine(int _argc, _TCHAR* _pArgv[], int& _correctParameters);
+
+	void Help();
 };

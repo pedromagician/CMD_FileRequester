@@ -1,181 +1,133 @@
 ﻿#include "UTL_Cmd.h"
 #include "UTL_Conversion.h"
 
-bool UTL_Cmd::IsHelp(wstring comm)
+UTL_Cmd::UTL_Cmd()
 {
-	comm = UTL_Conversion::ToLower(comm);
-	if (comm == _T("-?") || comm == _T("-help") || comm == _T("-h")) return true;
-	return false;
+	mArguments.clear();
 }
 
-bool UTL_Cmd::IsTitle(wstring comm)
+UTL_Cmd::~UTL_Cmd()
 {
-	comm = UTL_Conversion::ToLower(comm);
-	if (comm == _T("-title")) return true;
-	return false;
-}
-
-bool UTL_Cmd::IsOpen(wstring comm)
-{
-	comm = UTL_Conversion::ToLower(comm);
-	if (comm == _T("-open")) return true;
-	return false;
-}
-
-bool UTL_Cmd::IsSave(wstring comm)
-{
-	comm = UTL_Conversion::ToLower(comm);
-	if (comm == _T("-save")) return true;
-	return false;
-}
-
-bool UTL_Cmd::IsFileName(wstring comm)
-{
-	comm = UTL_Conversion::ToLower(comm);
-	if (comm == _T("-filename")) return true;
-	return false;
-}
-
-bool UTL_Cmd::IsOkLabel(wstring comm)
-{
-	comm = UTL_Conversion::ToLower(comm);
-	if (comm == _T("-ok")) return true;
-	return false;
-}
-
-bool UTL_Cmd::IsPath(wstring comm)
-{
-	comm = UTL_Conversion::ToLower(comm);
-	if (comm == _T("-path")) return true;
-	return false;
-}
-
-bool UTL_Cmd::IsDrawersOnly(wstring comm)
-{
-	comm = UTL_Conversion::ToLower(comm);
-	if (comm == _T("-drawersonly") || comm == _T("-foldersonly")) return true;
-	return false;
-}
-
-bool UTL_Cmd::IsFilter(wstring comm)
-{
-	comm = UTL_Conversion::ToLower(comm);
-	if (comm == _T("-filter")) return true;
-	return false;
 }
 
 void UTL_Cmd::Help()
 {
-	_tprintf(_T("FileRequester 0.1\n"));
+	_tprintf(_T("FileRequester 0.2\n"));
 	_tprintf(_T("	FileRequester for command line. Amiga Rulez!\n"));
 	_tprintf(_T("\nUsage:\n"));
-	_tprintf(_T("	FileRequester [OPTIONS]\n"));
+	_tprintf(_T("	FileRequester [options]\n"));
 	_tprintf(_T("\nOptions:\n"));
-	_tprintf(_T("	-title TITLE\n"));
-	_tprintf(_T("		The TITLE argument specifies the title of the file requester.\n"));
-	_tprintf(_T("	-open\n"));
-	_tprintf(_T("		Open mode. The file must exist.\n"));
-	_tprintf(_T("	-save\n"));
-	_tprintf(_T("		Save mode, requester is used for writing files to disk.\n"));
-	_tprintf(_T("	-filename FILE\n"));
-	_tprintf(_T("		The FILE argument specifies the default filename.\n"));
-	_tprintf(_T("	-ok OKTEXT\n"));
-	_tprintf(_T("		The OKTEXT argument specifies the text of ok button.\n"));
-	_tprintf(_T("	-path PATH\n"));
-	_tprintf(_T("		The PATH argument specifies the initial path of file requester. (-path \"d:\\\")\n"));
-	_tprintf(_T("	-drawersonly\n"));
-	_tprintf(_T("		If DRAWERSONLY is specified, the requester does not have a File gadget. This effectively turns the file requester into a directory requester.\n"));
-	_tprintf(_T("	-filter FILTER\n"));
-	_tprintf(_T("		The FILTER argument specifies the file types of file requester. (- filter \"Text|*.txt|All files|*.*\")\n"));
+
+	for (const auto& it : mArguments) {
+		for (const auto& text : it.text) {
+			_tprintf((_T("	") + text + _T(" xxx\n")).c_str());
+		}
+		_tprintf((_T("		") + it.help + _T("\n")).c_str());
+	}
 }
 
-int UTL_Cmd::ParseCommandLinbe(int argc, _TCHAR* argv[], int& iCorrectParameters, bool& bHelp, wstring& title, bool& bOpen, bool& bSave, wstring& filename, wstring& okLabel, wstring& path, bool& bDrawersOnly, wstring& filter)
+void UTL_Cmd::Add(ARGUMENT_TYPE _type, int _num, ...)
 {
-	iCorrectParameters = 0;
+	ARGUMENT arg;
+	arg.text.clear();
+	arg.type = _type;
 
-	for (int i = 0; i < argc; i++) {
-		wstring tmp = argv[i];
-		tmp = UTL_Conversion::TrimWhiteChar(tmp);
+	int argCount = _num;
+	_num += 2; //help & data pointer
+	if (_type == _ENUM) _num++; //convert table
 
-		if (UTL_Cmd::IsHelp(tmp)) {
-			bHelp = true;
-			iCorrectParameters++;
-			continue;
-		}
+	va_list arglist;
+	va_start(arglist, _num);
+	for (int x = 0; x < argCount; x++) {
+		LPCWSTR tmp = va_arg(arglist, LPCWSTR);
+		arg.text.push_back(tmp);
+	}
+	arg.help = va_arg(arglist, LPCWSTR);
+	arg.pVar = static_cast <void*> (va_arg(arglist, void*));
+	if (_type == _ENUM) arg.pTable = static_cast <map<wstring, UINT> *> (va_arg(arglist, void*));
+	else arg.pTable = nullptr;
+	va_end(arglist);
 
-		if (UTL_Cmd::IsOpen(tmp)) {
-			bOpen = true;
-			iCorrectParameters++;
-			continue;
-		}
+	mArguments.push_back(arg);
+}
 
-		if (UTL_Cmd::IsSave(tmp)) {
-			bSave = true;
-			iCorrectParameters++;
-			continue;
-		}
+int UTL_Cmd::ParseCommandLine(int _argc, _TCHAR* _pArgv[], int& _correctParameters)
+{
+	_correctParameters = 0;
 
-		if (UTL_Cmd::IsTitle(tmp)) {
-			i++;
-			if (i < argc) {
-				tmp = argv[i];
-				tmp = UTL_Conversion::TrimWhiteChar(tmp);
-				title = tmp;
-				iCorrectParameters++;
+	for (int i = 1; i < _argc; i++) {
+		bool unknown = true;
+		for (unsigned int a = 0; a < mArguments.size(); a++) {
+			if (find(mArguments[a].text.begin(), mArguments[a].text.end(), UTL_Conversion::TrimWhiteChar(_pArgv[i])) != mArguments[a].text.end()) {
+				if (mArguments[a].type == _STRING) {
+					i++;
+					if (i < _argc) {
+						wstring tmp = UTL_Conversion::TrimWhiteChar(_pArgv[i]);
+						UTL_Conversion::StringReplaceAll(tmp, _T("\\n"), _T("\n"));
+						*((wstring*)mArguments[a].pVar) = tmp;
+						_correctParameters++;
+						unknown = false;
+					}
+					break;
+				}
+				else if (mArguments[a].type == _BOOL) {
+					*((bool*)mArguments[a].pVar) = !*((bool*)mArguments[a].pVar);
+					_correctParameters++;
+					unknown = false;
+					break;
+				}
+				else if (mArguments[a].type == _TRUE) {
+					*((bool*)mArguments[a].pVar) = true;
+					_correctParameters++;
+					unknown = false;
+					break;
+				}
+				else if (mArguments[a].type == _INT) {
+					i++;
+					if (i < _argc) {
+						*((int*)mArguments[a].pVar) = UTL_Conversion::ToInt(UTL_Conversion::TrimWhiteChar(_pArgv[i]));
+						_correctParameters++;
+						unknown = false;
+					}
+					break;
+				}
+				else if (mArguments[a].type == _COLOR) {
+					i++;
+					if (i < _argc) {
+						((pair<bool, wstring>*)mArguments[a].pVar)->first = true;
+						((pair<bool, wstring>*)mArguments[a].pVar)->second = UTL_Conversion::TrimWhiteChar(_pArgv[i]);
+						_correctParameters++;
+						unknown = false;
+					}
+					break;
+				}
+				else if (mArguments[a].type == _ENUM) {
+					i++;
+					if (i < _argc) {
+						wstring key = UTL_Conversion::TrimWhiteChar(_pArgv[i]);
+						auto search = mArguments[a].pTable->find(key);
+						if (search != mArguments[a].pTable->end()) {
+							*((UINT*)mArguments[a].pVar) = search->second;
+							unknown = false;
+						}
+						else {
+							_tprintf(wstring(_T("Error - bad argument: ") + key + _T("\n")).c_str());
+							return 1;
+						}
+						_correctParameters++;
+					}
+					break;
+				}
+				else {
+					_tprintf(_T("Error - unknown type\n"));
+					return 1;
+				}
 			}
-			continue;
 		}
-
-		if (UTL_Cmd::IsFileName(tmp)) {
-			i++;
-			if (i < argc) {
-				tmp = argv[i];
-				tmp = UTL_Conversion::TrimWhiteChar(tmp);
-				filename = tmp;
-				iCorrectParameters++;
-			}
-			continue;
-		}
-
-		if (UTL_Cmd::IsOkLabel(tmp)) {
-			i++;
-			if (i < argc) {
-				tmp = argv[i];
-				tmp = UTL_Conversion::TrimWhiteChar(tmp);
-				okLabel = tmp;
-				iCorrectParameters++;
-			}
-			continue;
-		}
-
-		if (UTL_Cmd::IsPath(tmp)) {
-			i++;
-			if (i < argc) {
-				tmp = argv[i];
-				tmp = UTL_Conversion::TrimWhiteChar(tmp);
-				path = tmp;
-				iCorrectParameters++;
-			}
-			continue;
-		}
-
-		if (UTL_Cmd::IsDrawersOnly(tmp)) {
-			bDrawersOnly = true;
-			iCorrectParameters++;
-			continue;
-		}
-
-		if (UTL_Cmd::IsFilter(tmp)) {
-			i++;
-			if (i < argc) {
-				tmp = argv[i];
-				tmp = UTL_Conversion::TrimWhiteChar(tmp);
-				filter = tmp;
-				iCorrectParameters++;
-			}
-			continue;
+		if (unknown) {
+			_tprintf(wstring(_T("Error - unknown argument: ") + (wstring)_pArgv[i] + _T("\n")).c_str());
+			return 1;
 		}
 	}
-
 	return 0;
 }

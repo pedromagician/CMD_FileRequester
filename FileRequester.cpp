@@ -4,31 +4,44 @@
 #include "UTL_Cmd.h"
 #include "UTL_Conversion.h"
 
-int _tmain(int argc, _TCHAR* argv[])
+int _tmain(int _argc, _TCHAR* _pArgv[])
 {
-	int iCorrectParameters = 0;
-	bool bHelp = false;
-	bool bOpen = false;
-	bool bSave = false;
-	bool bDrawersOnly = false;
+	int correctParameters = 0;
+	bool help = false;
+	bool open = false;
+	bool save = false;
+	bool drawersOnly = false;
 	wstring title = _T("File Request");
 	wstring filename = _T("");
-	wstring okLabel = _T("");
 	wstring path = _T("");
 	wstring filter = _T("");
+	wstring okLabel = _T("");
 
-	if (UTL_Cmd::ParseCommandLinbe(argc, argv, iCorrectParameters, bHelp, title, bOpen, bSave, filename, okLabel, path, bDrawersOnly, filter) != 0)
-		bHelp = true;
+	UTL_Cmd cmd;
+	cmd.Add(UTL_Cmd::_TRUE,		3,	_T("-help"),		_T("-h"),			_T("-?"),	_T("To view help."),																							&help);
+	cmd.Add(UTL_Cmd::_STRING,	2,	_T("-title"),		_T("-t"),						_T("The 'xxx' argument specifies the title of the file requester."),											&title);
+	cmd.Add(UTL_Cmd::_TRUE,		2,	_T("-open"),		_T("-o"),						_T("Open mode. The file must exist."),																			&open);
+	cmd.Add(UTL_Cmd::_TRUE,		2,	_T("-save"),		_T("-s"),						_T("Save mode, requester is used for writing files to disk."),													&save);
+	cmd.Add(UTL_Cmd::_STRING,	2,	_T("-filename"),	_T("-f"),						_T("The 'xxx' argument specifies the default filename."),														&filename);
+	cmd.Add(UTL_Cmd::_STRING,	1,	_T("-ok"),											_T("The 'xxx' argument specifies the text of ok button."),														&okLabel);
+	cmd.Add(UTL_Cmd::_STRING,	1,	_T("-path"),										_T("The 'xxx' argument specifies the initial path of file requester. (-path \"d:\\\")"),						&path);
+	cmd.Add(UTL_Cmd::_TRUE,		2,	_T("-drawersonly"),	_T("-foldersonly"),				_T("If drawersonly is specified, the requester does not have a File gadget. This effectively turns the file requester into a directory requester."),	&drawersOnly);
+	cmd.Add(UTL_Cmd::_STRING,	1,	_T("-filter"),										_T("The 'xxx' argument specifies the file types of file requester. (-filter \"Text|*.txt|All files|*.*\")."),	&filter);
 
-	if (bHelp || iCorrectParameters == 0) {
-		UTL_Cmd::Help();
+	if (cmd.ParseCommandLine(_argc, _pArgv, correctParameters) != 0) {
+		cmd.Help();
 		return 0;
 	}
 
-	if (bOpen == false && bSave == false)
-		bOpen = true;
+	if (help || correctParameters == 0) {
+		cmd.Help();
+		return 0;
+	}
 
-	if (bOpen == bSave) {
+	if (open == false && save == false)
+		open = true;
+
+	if (open == save) {
 		_tprintf(_T("Error - open or save?\n"));
 		return 1;
 	}
@@ -42,7 +55,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	IFileDialog* pRequester = nullptr;
 	//IFileOpenDialog* pRequester;
 	//IFileSaveDialog* pRequester;
-	if (bOpen)
+	if (open)
 		hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pRequester));
 	else
 		hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL, IID_IFileSaveDialog, reinterpret_cast<void**>(&pRequester));
@@ -67,7 +80,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	else
 		pRequester->SetFolder(folder);
 
-	if (bDrawersOnly) {
+	if (drawersOnly) {
 		FILEOPENDIALOGOPTIONS ops = FOS_PICKFOLDERS;
 		pRequester->SetOptions(ops);
 	}

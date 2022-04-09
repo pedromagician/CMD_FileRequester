@@ -4,14 +4,14 @@
 
 class UTL_Conversion {
 public:
-	static int ToInt(const wstring& buff);
+	static int ToInt(const wstring& _val);
 
-	static wstring LeftTrimString(wstring str, const wstring& val);
-	static wstring RightTrimString(wstring str, const wstring& val);
-	static wstring TrimString(wstring str, const wstring& val);
-	static wstring TrimWhiteChar(const wstring& str);
+	static wstring LeftTrimString(wstring _str, const wstring& _val);
+	static wstring RightTrimString(wstring _str, const wstring& _val);
+	static wstring TrimString(wstring _str, const wstring& _val);
+	static wstring TrimWhiteChar(const wstring& _val);
 
-	static wstring ToLower(wstring str);
+	static wstring ToLower(wstring _val);
 
-	static void StringReplaceAll(wstring& mess, const wstring& oldStr, const wstring& newStr);
+	static void StringReplaceAll(wstring& _mess, const wstring& _oldStr, const wstring& _newStr);
 };

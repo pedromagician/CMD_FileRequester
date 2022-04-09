@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <map>
 #include <shlobj.h>
 #include "tchar.h"
 
