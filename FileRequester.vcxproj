@@ -84,7 +84,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FileRequester.cpp" />
+    <ClCompile Include="App.cpp" />
     <ClCompile Include="CommandLine.cpp" />
     <ClCompile Include="Conversion.cpp" />
   </ItemGroup>
