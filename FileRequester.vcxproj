@@ -85,14 +85,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FileRequester.cpp" />
-    <ClCompile Include="UTL_Cmd.cpp" />
-    <ClCompile Include="UTL_Conversion.cpp" />
+    <ClCompile Include="CommandLine.cpp" />
+    <ClCompile Include="Conversion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="UTL_Cmd.h" />
-    <ClInclude Include="UTL_Conversion.h" />
+    <ClInclude Include="CommandLine.h" />
+    <ClInclude Include="Conversion.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="project.rc" />

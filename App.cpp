@@ -1,8 +1,8 @@
 #pragma once
 
 #include "stdafx.h"
-#include "UTL_Cmd.h"
-#include "UTL_Conversion.h"
+#include "CommandLine.h"
+#include "Conversion.h"
 
 int _tmain(int _argc, _TCHAR* _pArgv[])
 {
@@ -17,16 +17,16 @@ int _tmain(int _argc, _TCHAR* _pArgv[])
 	wstring filter = _T("");
 	wstring okLabel = _T("");
 
-	UTL_Cmd cmd;
-	cmd.Add(UTL_Cmd::_TRUE,		3,	_T("-help"),		_T("-h"),			_T("-?"),	_T("To view help."),																							&help);
-	cmd.Add(UTL_Cmd::_STRING,	2,	_T("-title"),		_T("-t"),						_T("The 'xxx' argument specifies the title of the file requester."),											&title);
-	cmd.Add(UTL_Cmd::_TRUE,		2,	_T("-open"),		_T("-o"),						_T("Open mode. The file must exist."),																			&open);
-	cmd.Add(UTL_Cmd::_TRUE,		2,	_T("-save"),		_T("-s"),						_T("Save mode, requester is used for writing files to disk."),													&save);
-	cmd.Add(UTL_Cmd::_STRING,	2,	_T("-filename"),	_T("-f"),						_T("The 'xxx' argument specifies the default filename."),														&filename);
-	cmd.Add(UTL_Cmd::_STRING,	1,	_T("-ok"),											_T("The 'xxx' argument specifies the text of ok button."),														&okLabel);
-	cmd.Add(UTL_Cmd::_STRING,	1,	_T("-path"),										_T("The 'xxx' argument specifies the initial path of file requester. (-path \"d:\\\")"),						&path);
-	cmd.Add(UTL_Cmd::_TRUE,		2,	_T("-drawersonly"),	_T("-foldersonly"),				_T("If drawersonly is specified, the requester does not have a File gadget. This effectively turns the file requester into a directory requester."),	&drawersOnly);
-	cmd.Add(UTL_Cmd::_STRING,	1,	_T("-filter"),										_T("The 'xxx' argument specifies the file types of file requester. (-filter \"Text|*.txt|All files|*.*\")."),	&filter);
+	CommandLine cmd;
+	cmd.Add(CommandLine::_TRUE,		3,	_T("-help"),		_T("-h"),			_T("-?"),	_T("To view help."),																							&help);
+	cmd.Add(CommandLine::_STRING,	2,	_T("-title"),		_T("-t"),						_T("The 'xxx' argument specifies the title of the file requester."),											&title);
+	cmd.Add(CommandLine::_TRUE,		2,	_T("-open"),		_T("-o"),						_T("Open mode. The file must exist."),																			&open);
+	cmd.Add(CommandLine::_TRUE,		2,	_T("-save"),		_T("-s"),						_T("Save mode, requester is used for writing files to disk."),													&save);
+	cmd.Add(CommandLine::_STRING,	2,	_T("-filename"),	_T("-f"),						_T("The 'xxx' argument specifies the default filename."),														&filename);
+	cmd.Add(CommandLine::_STRING,	1,	_T("-ok"),											_T("The 'xxx' argument specifies the text of ok button."),														&okLabel);
+	cmd.Add(CommandLine::_STRING,	1,	_T("-path"),										_T("The 'xxx' argument specifies the initial path of file requester. (-path \"d:\\\")"),						&path);
+	cmd.Add(CommandLine::_TRUE,		2,	_T("-drawersonly"),	_T("-foldersonly"),				_T("If drawersonly is specified, the requester does not have a File gadget. This effectively turns the file requester into a directory requester."),	&drawersOnly);
+	cmd.Add(CommandLine::_STRING,	1,	_T("-filter"),										_T("The 'xxx' argument specifies the file types of file requester. (-filter \"Text|*.txt|All files|*.*\")."),	&filter);
 
 	if (cmd.ParseCommandLine(_argc, _pArgv, correctParameters) != 0) {
 		cmd.Help();
