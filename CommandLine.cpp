@@ -12,7 +12,7 @@ CommandLine::~CommandLine()
 
 void CommandLine::Help()
 {
-	_tprintf(_T("FileRequester 0.3.1\n"));
+	_tprintf(_T("FileRequester 0.4\n"));
 	_tprintf(_T("	FileRequester for command line. Amiga Rulez!\n"));
 	_tprintf(_T("\nUsage:\n"));
 	_tprintf(_T("	FileRequester [options]\n"));

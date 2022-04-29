@@ -120,7 +120,12 @@ int _tmain(int _argc, _TCHAR* _pArgv[])
 	}
 
 	wstring strResult = _T("");
-	hr = pRequester->Show(NULL);
+
+	POINT mouse;
+	::GetCursorPos(&mouse);
+
+	hr = pRequester->Show(WindowFromPoint(mouse));
+
 	if (SUCCEEDED(hr)) {
 		IShellItem* pItem;
 		hr = pRequester->GetResult(&pItem);
