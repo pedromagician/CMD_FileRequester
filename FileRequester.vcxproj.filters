@@ -40,6 +40,9 @@
     <ClInclude Include="FileRequester.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="project.rc">
