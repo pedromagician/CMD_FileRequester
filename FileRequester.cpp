@@ -134,7 +134,7 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 		}
 	}
 
-	wstring strResult = _T("");
+	_result = _T("");
 
 	POINT mouse;
 	::GetCursorPos(&mouse);
@@ -149,7 +149,7 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 			hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
 
 			if (SUCCEEDED(hr)) {
-				strResult = pszFilePath;
+				_result = pszFilePath;
 				CoTaskMemFree(pszFilePath);
 			}
 			pItem->Release();
