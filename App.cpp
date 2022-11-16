@@ -1,4 +1,4 @@
-#pragma once
+Debug theDebug; 
 
 #include "stdafx.h"
 #include "CommandLine.h"
