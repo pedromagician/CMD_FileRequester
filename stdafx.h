@@ -1,7 +1,6 @@
 #pragma once
 
 #include <windows.h>
-#include <string>
 #include <algorithm>
 #include <vector>
 #include <map>
@@ -10,6 +9,10 @@
 #include <iostream>
 #include <fcntl.h>
 #include <atlbase.h>
-#include "tchar.h"
+
+#include "Debug.h"
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
 
 using namespace std;

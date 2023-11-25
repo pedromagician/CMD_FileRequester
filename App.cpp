@@ -1,10 +1,10 @@
-Debug theDebug; 
-
 #include "stdafx.h"
+
+Debug theDebug;
+
 #include "CommandLine.h"
 #include "Conversion.h"
 #include "FileRequester.h"
-
 
 int _tmain(int _argc, _TCHAR* _pArgv[])
 {
