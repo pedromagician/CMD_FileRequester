@@ -85,15 +85,14 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 	}
 
 	ComScope com;
-	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-	if (FAILED(hr)) {
+	if (FAILED(com.Result())) {
 		wcout << _T("Error - problem with COM library") << endl;
 		return false;
 	}
 
 	IFileDialog* pRequester = nullptr;
-	//IFileOpenDialog* pRequester;
-	//IFileSaveDialog* pRequester;
+	HRESULT hr;
+
 	if (_open)
 		hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pRequester));
 	else
