@@ -119,17 +119,17 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 		}
 
 		if (vresult.size() % 2 == 0) {
-			COMDLG_FILTERSPEC* pFilter = new COMDLG_FILTERSPEC[vresult.size()];
-			int counter = 0;
-			for (unsigned int i = 0; i < vresult.size(); i++) {
-				pFilter[counter].pszName = &vresult[i][0];
-				i++;
-				if (i < vresult.size())
-					pFilter[counter].pszSpec = &vresult[i][0];
-				counter++;
+			std::vector<COMDLG_FILTERSPEC> filters;
+			filters.reserve(vresult.size() / 2);
+
+			for (size_t i = 0; i < vresult.size(); i += 2) {
+				COMDLG_FILTERSPEC spec;
+				spec.pszName = vresult[i].c_str();
+				spec.pszSpec = vresult[i + 1].c_str();
+				filters.push_back(spec);
 			}
 
-			pRequester->SetFileTypes(vresult.size() / 2, pFilter);
+			pRequester->SetFileTypes(filters.size(), filters.data());
 			pRequester->SetFileTypeIndex(1);
 		}
 		else {
