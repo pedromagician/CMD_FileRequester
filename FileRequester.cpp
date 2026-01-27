@@ -35,8 +35,7 @@ int CALLBACK FileRequester::BrowseCallbackProc(HWND _hwnd, UINT _uMsg, LPARAM _l
 
 bool FileRequester::BrowseFolder(const wstring& _init_path, const wstring& _title, wstring& _result)
 {
-	BROWSEINFO browserInfo;
-	memset(&browserInfo, 0, sizeof(browserInfo));
+	BROWSEINFO browserInfo{};
 
 	browserInfo.lpszTitle = _title.c_str();
 	browserInfo.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
@@ -52,7 +51,7 @@ bool FileRequester::BrowseFolder(const wstring& _init_path, const wstring& _titl
 	if (!SHGetPathFromIDList(pidl, path))
 		return false;
 
-	IMalloc* imalloc = 0;
+	IMalloc* imalloc = nullptr;
 	if (SUCCEEDED(SHGetMalloc(&imalloc))) {
 		imalloc->Free(pidl);
 		imalloc->Release();
@@ -127,7 +126,7 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 		vector<wstring>vresult;
 		while (_filter.size()) {
 			int index = _filter.find(_T("|"));
-			if (index != string::npos) {
+			if (index != wstring::npos) {
 				vresult.push_back(_filter.substr(0, index));
 				_filter = _filter.substr(index + 1);
 				if (_filter.size() == 0) vresult.push_back(_filter);

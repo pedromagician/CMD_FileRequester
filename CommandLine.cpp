@@ -83,7 +83,8 @@ int CommandLine::ParseCommandLine(int _argc, _TCHAR* _pArgv[], int& _correctPara
 				if (mArguments[a].type == _STRING) {
 					i++;
 					if (i >= _argc) {
-						wcout << _T("Error - missing argument: ") + (wstring)_pArgv[i-1] << endl;
+						if (i > 0) wcout << _T("Error - missing argument: ") + (wstring)_pArgv[i-1] << endl;
+						else wcout << _T("Error - missing argument") << endl;
 						return 1;
 					}
 					wstring tmp = _pArgv[i];
