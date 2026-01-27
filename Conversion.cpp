@@ -61,7 +61,7 @@ void Conversion::StringReplaceAll(wstring& _mess, const wstring& _oldStr, const 
 	const size_t oldLen = _oldStr.length();
 	const size_t newLen = _newStr.length();
 	size_t position = 0;
-	while ((position = _mess.find(_oldStr, position)) != string::npos)
+	while ((position = _mess.find(_oldStr, position)) != wstring::npos)
 	{
 		_mess.replace(position, oldLen, _newStr);
 		position += newLen;
