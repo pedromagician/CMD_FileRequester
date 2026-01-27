@@ -88,7 +88,7 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 	if (_okLabel.empty() == false)
 		pRequester->SetOkButtonLabel(_okLabel.c_str());
 
-	IShellItem* folder;
+	IShellItem* folder = nullptr;
 	if (_path.empty())
 		hr = SHCreateItemInKnownFolder(FOLDERID_Documents, 0, NULL, IID_PPV_ARGS(&folder));
 	else
@@ -145,7 +145,7 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 	hr = pRequester->Show(WindowFromPoint(mouse));
 
 	if (SUCCEEDED(hr)) {
-		IShellItem* pItem;
+		IShellItem* pItem = nullptr;
 		hr = pRequester->GetResult(&pItem);
 		if (SUCCEEDED(hr)) {
 			PWSTR pszFilePath;
@@ -163,7 +163,8 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 		}
 	}
 
-	pRequester->Release();
+	if (pRequester)
+		pRequester->Release();
 	folder->Release();
 	CoUninitialize();
 	return true;
