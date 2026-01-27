@@ -1,6 +1,26 @@
 #include "stdafx.h"
 #include "FileRequester.h"
 
+class ComScope
+{
+public:
+	ComScope() : m_hr(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE))
+	{
+	}
+
+	~ComScope()
+	{
+		if (SUCCEEDED(m_hr)) {
+			CoUninitialize();
+		}
+	}
+
+	HRESULT Result() const { return m_hr; }
+
+private:
+	HRESULT m_hr;
+};
+
 int CALLBACK FileRequester::BrowseCallbackProc(HWND _hwnd, UINT _uMsg, LPARAM _lParam, LPARAM _lpData)
 {
 	UNREFERENCED_PARAMETER(_lParam);
@@ -64,6 +84,7 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 		return true;
 	}
 
+	ComScope com;
 	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 	if (FAILED(hr)) {
 		wcout << _T("Error - problem with COM library") << endl;
@@ -166,6 +187,5 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 	if (pRequester)
 		pRequester->Release();
 	folder->Release();
-	CoUninitialize();
 	return true;
 }
