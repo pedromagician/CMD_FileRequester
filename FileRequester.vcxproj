@@ -127,6 +127,8 @@ revision.bat
   </ItemGroup>
   <ItemGroup>
     <None Include="git\revision.bat" />
+    <None Include="git\revision.h.def" />
+    <None Include="git\revision.h.new" />
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

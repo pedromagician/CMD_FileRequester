@@ -5,7 +5,11 @@ setlocal enabledelayedexpansion
 
 git rev-parse --is-inside-work-tree >nul 2>&1
 if errorlevel 1 (
-    echo Not a git repository, skipping revision generation.
+    echo Not a git repository, generating fallback revision.h...
+
+    copy /y revision.h.def revision.h >nul
+
+    type revision.h
     exit /b 0
 )
 

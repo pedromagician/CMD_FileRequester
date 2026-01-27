@@ -71,5 +71,11 @@
     <None Include="git\revision.bat">
       <Filter>git</Filter>
     </None>
+    <None Include="git\revision.h.def">
+      <Filter>git</Filter>
+    </None>
+    <None Include="git\revision.h.new">
+      <Filter>git</Filter>
+    </None>
   </ItemGroup>
 </Project>
