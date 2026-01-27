@@ -185,6 +185,7 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 
 	if (pRequester)
 		pRequester->Release();
-	folder->Release();
+	if (folder)
+		folder->Release();
 	return true;
 }
