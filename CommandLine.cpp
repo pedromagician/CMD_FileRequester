@@ -35,32 +35,35 @@ void CommandLine::Add(ARGUMENT_TYPE _type, int _num, ...)
 	ARGUMENT arg;
 	arg.text.clear();
 	arg.type = _type;
+	arg.pVar = nullptr;
+	arg.pTable = nullptr;
 
-	int argCount = _num;
-	_num += 2; //help & data pointer
-	if (_type == _ENUM) _num++; //convert table
+	const int argCount = _num;
 
 	va_list arglist;
 	va_start(arglist, _num);
+
 	for (int x = 0; x < argCount; x++) {
 		LPCWSTR tmp = va_arg(arglist, LPCWSTR);
-		arg.text.push_back(Conversion::ToLower(Conversion::TrimWhiteChar(tmp)));
+		wstring cleaned = Conversion::ToLower(Conversion::TrimWhiteChar(tmp));
+		arg.text.push_back(cleaned);
 
 #ifdef DEBUG
-		for (const auto& itArg : mArguments) {
-			for (const auto& itParam : itArg.text) {
-				if (itParam == Conversion::ToLower(Conversion::TrimWhiteChar(tmp)))
+		for (const auto& existing : mArguments) {
+			for (const auto& alias : existing.text) {
+				if (alias == cleaned) {
 					wcout << _T("Error - the same switch, you will not be able to use it") << endl;
+				}
 			}
 		}
 #endif // DEBUG
 
 	}
-	arg.help = va_arg(arglist, LPCWSTR);
-	arg.pVar = static_cast <void*> (va_arg(arglist, void*));
-	if (_type == _ENUM) arg.pTable = static_cast <map<wstring, UINT> *> (va_arg(arglist, void*));
-	else arg.pTable = nullptr;
 
+	arg.help = va_arg(arglist, LPCWSTR);
+	arg.pVar = va_arg(arglist, void*);
+	if (_type == _ENUM)
+		arg.pTable = static_cast<map<wstring, UINT>*>(va_arg(arglist, void*));
 	va_end(arglist);
 
 	mArguments.push_back(arg);
