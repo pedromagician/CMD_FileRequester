@@ -2,3 +2,5 @@
 Debug/
 Release/
 project.aps
+git/revision.h
+git/revision.h.new
