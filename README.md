@@ -1,60 +1,59 @@
 # FileRequester
+
 FileRequester for Windows command line.
 
 Repository: [https://github.com/pedromagician/CMD_FileRequester]
 
-A lightweight Windows command‑line tool that opens native file/folder dialogs and returns the selected path.
-Perfect for batch scripts, automation, and tools that need interactive file selection.
+A lightweight Windows console application that displays a native file requester dialog from the command line.
+Designed for developers, automation scripts, and retro‑inspired workflows.
 
-Note: The latest Microsoft Visual C++ Redistributable (x86) is required to run the program. See: [https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170]
+## ✨ Overview
 
-![bench](https://raw.githubusercontent.com/pedromagician/CMD_FileRequester/main/pic/screenshot.png)
+FileRequester is a small utility that opens a standard Windows file or directory selection dialog using command‑line arguments.
+It supports Open, Save, and Directory modes, customizable titles, filters, default filenames, and more.
 
-## 🎯 Overview
+The tool returns the selected path to stdout, making it easy to integrate into batch files, PowerShell scripts, or other applications.
 
-`filerequester.exe` launches a standard Windows dialog (Open, Save, or Folder Select) and prints the chosen path to stdout.
-This makes it easy to integrate GUI file selection into batch files or console utilities.
+## 🚀 Usage Examples
 
-## 📦 Basic Usage
-
-### Open File dialog
 ```bat
-filerequester -open
+FileRequester.exe -title "Select a file" -o -path C:\ -ok OK
+
+FileRequester.exe -open -filter "Text|*.txt|All files|*.*"
 ```
 
-### Save File dialog
-```bat
-filerequester -save
-```
-
-### Select Folder dialog
-```bat
-filerequester -directory
-```
-
-## 🧩 Batch Script Example
-
-Store the selected path into a variable:
-```bat
-@echo|set /p="@set mytmp=">1.bat
-@filerequester -open>>1.bat
-@call 1.bat
-@echo %mytmp%
-```
-
-## 🔧 Command‑Line Options
+## 🧰 Command‑line Options
 
 | Switch | Description |
 |--------|-------------|
-| `-open` | Show Open File dialog |
-| `-save` | Show Save File dialog |
-| `-directory` | Select a folder |
-| `-path <folder>` | Initial directory |
-| `-title <text>` | Dialog title |
-| `-filename <name>` | Default filename |
-| `-ok <label>` | Custom OK button text |
-| `-filter <text>` | File filter (e.g. `"Images|*.png;*.jpg|All|*.*"`) |
-| `-drawersonly`, `-foldersonly` | Removes the File gadget, effectively turning the Open dialog into a folder‑only selector (Open mode only) |
+| `-help`, `-h`, `-?` | Displays this help information. |
+| `-title`, `-t` | Specifies the window title of the requester. |
+| `-open`, `-o` | Select an existing file. The file must already exist. |
+| `-save`, `-s` | Choose a destination filename. The file does not need to exist. |
+| `-directory`, `-d` | Select a directory instead of a file. |
+| `-filename`, `-f` | Sets a pre-filled filename in the requester. |
+| `-ok` | Custom text for the confirmation button. |
+| `-path` | Sets the initial directory (e.g., "D:\"). |
+| `-drawersonly`, `-foldersonly` | Removes file selection; directories only. Mostly for Open mode. |
+| `-filter` | Defines file type filters using "Description\|\*.ext" format.<br>Example: "Text\|\*.txt\|All files\|\*.\*" |
+
+
+## 🔧 Integration Examples
+
+Store the selected path into a variable:
+
+```bat
+@set "FILE="
+@for /f "usebackq delims=" %%A in (`FileRequester.exe -o`) do @set "FILE=%%A"
+@echo Selected: %FILE%
+```
+
+```bat
+@echo|set /p="@set mytmp=">tmp.bat
+@filerequester -open>>tmp.bat
+@call tmp.bat
+@echo %mytmp%
+```
 
 ## 📜 License
 
