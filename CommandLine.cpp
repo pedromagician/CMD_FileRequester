@@ -10,7 +10,8 @@ CommandLine::CommandLine() : mHelp(false)
 CommandLine::ParamDef::ParamDef()
 	: type(ParamType::BOOL),
 	required(RequiredParam::Optional), hasDefault(false),
-	outBool(nullptr), outInt(nullptr), outString(nullptr), outEnum(nullptr), outChar(nullptr),
+	outBool(nullptr), outInt(nullptr), outString(nullptr), outEnum(nullptr), outChar(nullptr), outColor(nullptr),
+	defaultBool(false),
 	defaultInt(0),
 	defaultEnum(0),
 	defaultChar(0),
@@ -52,7 +53,12 @@ void CommandLine::AddHelp(const vector<wstring>& _names, const wstring& _desc, b
 	AddBool(_names, _desc, _outVar);
 }
 
-void CommandLine::AddBool(const vector<wstring>& _names, const wstring& _desc, bool& _outVar, RequiredParam _required)
+void CommandLine::AddBool(const vector<wstring>& _names, const wstring& _desc, bool& _outVar)
+{
+	AddBool(_names, _desc, _outVar, RequiredParam::Optional, _outVar);
+}
+
+void CommandLine::AddBool(const vector<wstring>& _names, const wstring& _desc, bool& _outVar, RequiredParam _required, bool _defaultValue)
 {
 	ParamDef p;
 	p.names = _names;
@@ -60,8 +66,15 @@ void CommandLine::AddBool(const vector<wstring>& _names, const wstring& _desc, b
 	p.type = ParamType::BOOL;
 	p.outBool = &_outVar;
 	p.required = _required;
+	p.hasDefault = (_required == RequiredParam::Optional);
+	p.defaultBool = _defaultValue;
 
 	AddParamBase(p);
+}
+
+void CommandLine::AddInt(const vector<wstring>& _names, const wstring& _desc, int& _outVar)
+{
+	AddInt(_names, _desc, _outVar, RequiredParam::Optional, _outVar);
 }
 
 void CommandLine::AddInt(const vector<wstring>& _names, const wstring& _desc, int& _outVar, RequiredParam _required, int _defaultValue)
@@ -72,10 +85,15 @@ void CommandLine::AddInt(const vector<wstring>& _names, const wstring& _desc, in
 	p.type = ParamType::INT;
 	p.outInt = &_outVar;
 	p.required = _required;
-	p.hasDefault = !(bool)_required;
+	p.hasDefault = (_required == RequiredParam::Optional);
 	p.defaultInt = _defaultValue;
 
 	AddParamBase(p);
+}
+
+void CommandLine::AddString(const vector<wstring>& _names, const wstring& _desc, wstring& _outVar)
+{
+	AddString(_names, _desc, _outVar, RequiredParam::Optional, _outVar);
 }
 
 void CommandLine::AddString(const vector<wstring>& _names, const wstring& _desc, wstring& _outVar, RequiredParam _required, const wstring& _defaultValue)
@@ -86,10 +104,15 @@ void CommandLine::AddString(const vector<wstring>& _names, const wstring& _desc,
 	p.type = ParamType::STRING;
 	p.outString = &_outVar;
 	p.required = _required;
-	p.hasDefault = !(bool)_required;
+	p.hasDefault = (_required == RequiredParam::Optional);
 	p.defaultString = _defaultValue;
 
 	AddParamBase(p);
+}
+
+void CommandLine::AddEnum(const vector<wstring>& _names, const wstring& _desc, const map<wstring, int>& _enumMap, int& _outVar)
+{
+	AddEnum(_names, _desc, _enumMap, _outVar, RequiredParam::Optional, _outVar);
 }
 
 void CommandLine::AddEnum(const vector<wstring>& _names, const wstring& _desc, const map<wstring, int>& _enumMap, int& _outVar, RequiredParam _required, int _defaultValue)
@@ -101,10 +124,15 @@ void CommandLine::AddEnum(const vector<wstring>& _names, const wstring& _desc, c
 	p.enumMap = _enumMap;
 	p.outEnum = &_outVar;
 	p.required = _required;
-	p.hasDefault = !(bool)_required;
+	p.hasDefault = (_required == RequiredParam::Optional);
 	p.defaultEnum = _defaultValue;
 
 	AddParamBase(p);
+}
+
+void CommandLine::AddChar(const vector<wstring>& _names, const wstring& _desc, wchar_t& _outVar)
+{
+	AddChar(_names, _desc, _outVar, RequiredParam::Optional, _outVar);
 }
 
 void CommandLine::AddChar(const vector<wstring>& _names, const wstring& _desc, wchar_t& _outVar, RequiredParam _required, wchar_t _defaultValue)
@@ -115,8 +143,27 @@ void CommandLine::AddChar(const vector<wstring>& _names, const wstring& _desc, w
 	p.type = ParamType::CHAR;
 	p.outChar = &_outVar;
 	p.required = _required;
-	p.hasDefault = !(bool)_required;
+	p.hasDefault = (_required == RequiredParam::Optional);
 	p.defaultChar = _defaultValue;
+
+	AddParamBase(p);
+}
+
+void CommandLine::AddColor(const vector<wstring>& _names, const wstring& _desc, ColorRGB& _outVar)
+{
+	AddColor(_names, _desc, _outVar, RequiredParam::Optional, _outVar);
+}
+
+void CommandLine::AddColor(const vector<wstring>& _names, const wstring& _desc, ColorRGB& _outVar, RequiredParam _required, const ColorRGB& _defaultValue)
+{
+	ParamDef p;
+	p.names = _names;
+	p.description = _desc;
+	p.type = ParamType::COLOR;
+	p.outColor = &_outVar;
+	p.required = _required;
+	p.hasDefault = (_required == RequiredParam::Optional);
+	p.defaultColor = _defaultValue;
 
 	AddParamBase(p);
 }
@@ -130,10 +177,12 @@ bool CommandLine::ParseCommandLine(int _argc, wchar_t** _argv, int& _correctCoun
 		ParamDef& p = mParams[i];
 		if (p.hasDefault) {
 			switch (p.type) {
+			case ParamType::BOOL:   *p.outBool = p.defaultBool; break;
 			case ParamType::INT:    *p.outInt = p.defaultInt; break;
 			case ParamType::STRING: *p.outString = p.defaultString; break;
 			case ParamType::ENUM:   *p.outEnum = p.defaultEnum; break;
 			case ParamType::CHAR:	*p.outChar = p.defaultChar; break;
+			case ParamType::COLOR:  *p.outColor = p.defaultColor; break;
 			default: break;
 			}
 		}
@@ -272,6 +321,67 @@ bool CommandLine::ParseCommandLine(int _argc, wchar_t** _argv, int& _correctCoun
 			_correctCount++;
 			break;
 		}
+
+		case ParamType::COLOR: {
+			wstring valStr;
+			if (!value.empty()) {
+				valStr = value;
+			}
+			else {
+				if (i + 1 >= _argc) {
+					wprintf(L"Missing value for color parameter -%s\n", found->names[0].c_str());
+					return false;
+				}
+				valStr = _argv[++i];
+			}
+
+			valStr = Conversion::TrimString(valStr, L"#");
+
+			if (valStr.size() == 3) { // expand #abc → aabbcc
+				wstring expanded;
+				expanded.reserve(6);
+				for (wchar_t c : valStr)
+					expanded.append(2, c);
+
+				valStr = expanded;
+			}
+
+			if (valStr.size() < 6) {
+				wprintf(L"Invalid color format for -%s (expected #RRGGBB, RRGGBB, #RGB or RGB)\n", found->names[0].c_str());
+				return false;
+			}
+
+			try {
+				wstring hexPart = valStr.substr(0, 6);
+
+				for (wchar_t c : hexPart) {
+					if (!iswxdigit(c)) {
+						wprintf(L"Invalid character in color value for -%s: %lc\n", found->names[0].c_str(), c);
+						return false;
+					}
+				}
+
+				unsigned long r = wcstol(hexPart.substr(0, 2).c_str(), nullptr, 16);
+				unsigned long g = wcstol(hexPart.substr(2, 2).c_str(), nullptr, 16);
+				unsigned long b = wcstol(hexPart.substr(4, 2).c_str(), nullptr, 16);
+
+				if (r > 255 || g > 255 || b > 255) {
+					wprintf(L"Color values must be between 0 and 255\n");
+					return false;
+				}
+
+				*found->outColor = ColorRGB((unsigned char)r, (unsigned char)g, (unsigned char)b);
+			}
+			catch (...) {
+				wprintf(L"Error parsing color value for -%s\n", found->names[0].c_str());
+				return false;
+			}
+
+			found->seen = true;
+			_correctCount++;
+			break;
+		}
+
 		}
 	}
 
@@ -294,8 +404,7 @@ void CommandLine::Help()
 	wprintf(L"%hs %hs\n", VER_PRODUCTNAME_STR, VER_FILE_VERSION_STR);
 	wprintf(L"\t%hs\n\n", VER_FILE_DESCRIPTION_STR);
 	wprintf(L"Examples:\n");
-	wprintf(L"\t%hs -title Title -o -path c: -ok OK\n", VER_ORIGINAL_FILENAME_STR);
-	wprintf(L"\t%hs -open -filter \"Text|*.txt|All files|*.*\"\n", VER_ORIGINAL_FILENAME_STR);
+	wprintf(L"\t%hs -t Title -m Message\n", VER_ORIGINAL_FILENAME_STR);
 	wprintf(L"\n");
 	wprintf(L"Options:\n");
 
@@ -342,6 +451,13 @@ void CommandLine::Help()
 				}
 
 				wprintf(L"\n");
+			}
+		}
+
+		if (p.type == ParamType::COLOR) {
+			wprintf(L"        Format: #RRGGBB or RRGGBB (Hex)\n");
+			if (p.hasDefault) {
+				wprintf(L"        Default: #%02X%02X%02X\n", p.defaultColor.r, p.defaultColor.g, p.defaultColor.b);
 			}
 		}
 
