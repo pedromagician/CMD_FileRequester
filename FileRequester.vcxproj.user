@@ -3,5 +3,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerCommandArguments>-open -filter "Text|*.txt|All files|*.*" -path c:\</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArgumentsHistory>All files|*.*" -path c:\|-open -filter "Text|*.txt|All files|*.*" -path c:\|-open -filter "Text|*.txt|All files|*.*" -path c:\|-open -filter "Text|*.txt|All files|*.*" -path c:\|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
 </Project>

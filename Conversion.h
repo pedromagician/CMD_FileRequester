@@ -14,4 +14,6 @@ public:
 	static wstring ToLower(const wstring& _val);
 
 	static void StringReplaceAll(wstring& _mess, const wstring& _oldStr, const wstring& _newStr);
+
+	static wstring ParseEscapeString(const wstring& _str);
 };

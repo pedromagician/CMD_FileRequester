@@ -257,6 +257,7 @@ bool CommandLine::ParseCommandLine(int _argc, wchar_t** _argv, int& _correctCoun
 				if (i + 1 >= _argc) return false;
 				*found->outString = _argv[++i];
 			}
+			*found->outString = Conversion::ParseEscapeString(*found->outString);
 			found->seen = true;
 			_correctCount++;
 			break;
@@ -463,4 +464,16 @@ void CommandLine::Help()
 
 		wprintf(L"\n");
 	}
+}
+
+bool CommandLine::WasProvided(const wstring& _name) const
+{
+	wstring key = Conversion::TrimWhiteChar(Conversion::ToLower(_name));
+
+	auto it = mAliasMap.find(key);
+	if (it == mAliasMap.end())
+		return false;
+
+	const ParamDef& p = mParams[it->second];
+	return p.seen;
 }

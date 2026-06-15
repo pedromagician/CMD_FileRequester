@@ -2,8 +2,6 @@
 
 FileRequester for Windows command line.
 
-Repository: [https://github.com/pedromagician/CMD_FileRequester]
-
 A lightweight Windows console application that displays a native file requester dialog from the command line.
 Designed for developers, automation scripts, and retro‑inspired workflows.
 
