@@ -47,10 +47,22 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 	IFileDialog* pRequester = nullptr;
 	HRESULT hr = E_FAIL;
 
-	if (_save)
-		hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL, IID_IFileSaveDialog, reinterpret_cast<void**>(&pRequester));
-	else
-		hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pRequester));
+	if (_save) {
+		IFileSaveDialog* pSaveDialog = nullptr;
+		hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL, IID_PPV_ARGS(&pSaveDialog));
+		if (SUCCEEDED(hr)) {
+			hr = pSaveDialog->QueryInterface(IID_PPV_ARGS(&pRequester));
+			pSaveDialog->Release();
+		}
+	}
+	else {
+		IFileOpenDialog* pOpenDialog = nullptr;
+		hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_PPV_ARGS(&pOpenDialog));
+		if (SUCCEEDED(hr)) {
+			hr = pOpenDialog->QueryInterface(IID_PPV_ARGS(&pRequester));
+			pOpenDialog->Release();
+		}
+	}
 
 	if (FAILED(hr) || !pRequester) {
 		wcout << _T("Error - problem with creating object") << endl;
