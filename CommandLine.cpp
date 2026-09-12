@@ -405,7 +405,7 @@ void CommandLine::Help()
 	wprintf(L"%hs %hs\n", VER_PRODUCTNAME_STR, VER_FILE_VERSION_STR);
 	wprintf(L"\t%hs\n\n", VER_FILE_DESCRIPTION_STR);
 	wprintf(L"Examples:\n");
-	wprintf(L"\t%hs -t Title -m Message\n", VER_ORIGINAL_FILENAME_STR);
+	wprintf(L"\t%hs -o -t Title -path d:\\\n", VER_ORIGINAL_FILENAME_STR);
 	wprintf(L"\n");
 	wprintf(L"Options:\n");
 
