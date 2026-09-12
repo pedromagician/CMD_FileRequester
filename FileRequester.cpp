@@ -99,47 +99,45 @@ bool FileRequester::Requester(bool _save, bool _open, bool _directory, bool _dra
 
 	vector<COMDLG_FILTERSPEC> filters;
 	if (!pickFolders && !_filter.empty()) {
-		if (_filter.empty() == false) {
-			vector<wstring> parts;
-			parts.reserve(12);
+		vector<wstring> parts;
+		parts.reserve(12);
 
-			wstring_view view = _filter;
+		wstring_view view = _filter;
 
-			while (!view.empty()) {
-				size_t pos = view.find(L'|');
-				if (pos == wstring_view::npos) {
-					parts.emplace_back(view);
-					break;
-				}
-
-				wstring_view token = view.substr(0, pos);
-				parts.emplace_back(token);
-
-				view.remove_prefix(pos + 1);
+		while (!view.empty()) {
+			size_t pos = view.find(L'|');
+			if (pos == wstring_view::npos) {
+				parts.emplace_back(view);
+				break;
 			}
 
-			parts.erase(
-				remove_if(parts.begin(), parts.end(),
-					[](const wstring& s) { return s.empty(); }),
-				parts.end()
-			);
+			wstring_view token = view.substr(0, pos);
+			parts.emplace_back(token);
 
-			if (parts.size() % 2 != 0) {
-				wcout << _T("Error - bad filter") << endl;
+			view.remove_prefix(pos + 1);
+		}
+
+		parts.erase(
+			remove_if(parts.begin(), parts.end(),
+				[](const wstring& s) { return s.empty(); }),
+			parts.end()
+		);
+
+		if (parts.size() % 2 != 0) {
+			wcout << _T("Error - bad filter") << endl;
+		}
+		else {
+			filters.reserve(parts.size() / 2);
+
+			for (size_t i = 0; i < parts.size(); i += 2) {
+				COMDLG_FILTERSPEC spec;
+				spec.pszName = parts[i].c_str();
+				spec.pszSpec = parts[i + 1].c_str();
+				filters.push_back(spec);
 			}
-			else {
-				filters.reserve(parts.size() / 2);
 
-				for (size_t i = 0; i < parts.size(); i += 2) {
-					COMDLG_FILTERSPEC spec;
-					spec.pszName = parts[i].c_str();
-					spec.pszSpec = parts[i + 1].c_str();
-					filters.push_back(spec);
-				}
-
-				pRequester->SetFileTypes(static_cast<UINT>(filters.size()), filters.data());
-				pRequester->SetFileTypeIndex(1);
-			}
+			pRequester->SetFileTypes(static_cast<UINT>(filters.size()), filters.data());
+			pRequester->SetFileTypeIndex(1);
 		}
 	}
 	_result = _T("");
