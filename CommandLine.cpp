@@ -269,42 +269,32 @@ bool CommandLine::ParseCommandLine(int _argc, wchar_t** _argv, int& _correctCoun
 			break;
 		}
 		case ParamType::ENUM: {
+			wstring val;
 			if (!value.empty()) {
-				wstring valLower = Conversion::ToLower(value);
-				bool matched = false;
-				for (auto& kv : found->enumMap) {
-					if (Conversion::ToLower(kv.first) == valLower) {
-						*found->outEnum = kv.second;
-						matched = true;
-						break;
-					}
-				}
-				if (!matched) {
-					wprintf(L"Invalid enum value: %s\n", value.c_str());
-					return false;
-				}
+				val = value;
 			}
 			else {
 				if (i + 1 >= _argc) {
 					wprintf(L"Missing value for parameter -%s\n", found->names[0].c_str());
 					return false;
 				}
-				wstring val = _argv[++i];
+				val = _argv[++i];
+			}
 
-				wstring valLower = Conversion::ToLower(val);
-				bool matched = false;
-				for (auto& kv : found->enumMap) {
-					if (Conversion::ToLower(kv.first) == valLower) {
-						*found->outEnum = kv.second;
-						matched = true;
-						break;
-					}
-				}
-				if (!matched) {
-					wprintf(L"Invalid enum value: %s\n", val.c_str());
-					return false;
+			wstring valLower = Conversion::ToLower(val);
+			bool matched = false;
+			for (auto& kv : found->enumMap) {
+				if (Conversion::ToLower(kv.first) == valLower) {
+					*found->outEnum = kv.second;
+					matched = true;
+					break;
 				}
 			}
+			if (!matched) {
+				wprintf(L"Invalid enum value: %s\n", val.c_str());
+				return false;
+			}
+
 			found->seen = true;
 			_correctCount++;
 			break;
